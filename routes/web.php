@@ -20,6 +20,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// API Routes
 Route::get('/{region}/ec2/instance/bestfit/{cpu}/{memory}', [ApiController::class,'instancebestfit']);
 Route::get('/{region}/ec2/ebs/cost', [ApiController::class,'ebscost']);
 Route::get('/{region}/ec2/egress/cost', [ApiController::class,'egresscost']);

@@ -32,7 +32,7 @@ public function ebscost(Request $request, $region)
 {
     $results = [
         "region" => $region,
-        "ebs_cost" => 0.005,
+        "ebs_cost" => 0.12,
     ];
 
     return json_encode($results);
