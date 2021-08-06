@@ -16,10 +16,9 @@ class ApiController extends Controller
             "region" => $region,
             "cpu" => $cpu,
             "memory" => $memory,
-            "recommended_instance_type" => 'm4-large',
-            "on_demand_cost" => 0.005,
-            "3yr_standard_ri_allupfront_cost" => 0.001,
-            "1yr_convertible_ri_no_upfront_cost" => .003,
+            "recommended_instance_type" => 'm5.large',
+            "on_demand_cost" => 0.096,
+            "1yr_standard_ri_allupfront_cost" => 0.056,
         ];
 
         return json_encode($results);
@@ -45,7 +44,7 @@ public function egresscost(Request $request, $region)
 {
     $results = [
         "region" => $region,
-        "egress_cost" => 0.005,
+        "egress_cost" => 0.042,
     ];
 
     return json_encode($results);
