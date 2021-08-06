@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Log;
+
 class ApiController extends Controller
 {
     
@@ -20,6 +22,8 @@ class ApiController extends Controller
             "on_demand_cost" => 0.096,
             "one_year_standard_ri_allupfront_cost" => 0.056,
         ];
+
+        Log::info("API Request Receive");
 
         return json_encode($results);
     }
