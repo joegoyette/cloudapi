@@ -57,12 +57,12 @@ class ApiController extends Controller
         } else {
             // Round up to next highest value in array
             foreach ($memory_sizes as $size) {
-                if ($memory < 8 )
+                if ($memory < min($memory_sizes) )
                 {
                     $bestfitmemory = 8;
                     break;
                 }
-                if ($memory > 384 )
+                if ($memory > max($memory_sizes) )
                 {
                     $bestfitmemory = 384;
                     break;
@@ -98,30 +98,31 @@ class ApiController extends Controller
         return json_encode($results);
     }
 
+
     /**
- *     Return recommended instance type and pricing details    
-**/
-public function ebscost(Request $request, $region)
-{
-    $results = [
-        "region" => $region,
-        "ebs_cost" => 0.12,
-    ];
+    *     Return recommended instance type and pricing details    
+    **/
+    public function ebscost(Request $request, $region)
+    {
+        $results = [
+            "region" => $region,
+            "ebs_cost" => 0.12,
+        ];
 
-    return json_encode($results);
-}
+        return json_encode($results);
+    }
 
-/**
- *     Return recommended instance type and pricing details    
-**/
-public function egresscost(Request $request, $region)
-{
-    $results = [
-        "region" => $region,
-        "egress_cost" => 0.042,
-    ];
+    /**
+     *     Return recommended instance type and pricing details    
+    **/
+    public function egresscost(Request $request, $region)
+    {
+        $results = [
+            "region" => $region,
+            "egress_cost" => 0.042,
+        ];
 
-    return json_encode($results);
-}
+        return json_encode($results);
+    }
 
 }
