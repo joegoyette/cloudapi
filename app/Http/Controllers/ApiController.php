@@ -18,7 +18,7 @@ class ApiController extends Controller
             "memory" => $memory,
             "recommended_instance_type" => 'm5.large',
             "on_demand_cost" => 0.096,
-            "1yr_standard_ri_allupfront_cost" => 0.056,
+            "one_year_standard_ri_allupfront_cost" => 0.056,
         ];
 
         return json_encode($results);
