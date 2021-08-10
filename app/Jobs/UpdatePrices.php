@@ -113,32 +113,74 @@ class UpdatePrices implements ShouldQueue
                     'ServiceCode' => 'AmazonEC2'
                     ]);
 
-                $price = json_decode($result["PriceList"][0],true);
-                $terms = $price["terms"]["OnDemand"];
-                $price_per_unit = (reset(reset(reset($terms))))["pricePerUnit"]["USD"];
+                // Extract OnDemand Price
+                $odprice = json_decode($result["PriceList"][0],true);
+                $odterms = $odprice["terms"]["OnDemand"];
+                $odterm = reset($odterms);
+                $odPriceDimensions = $odterm["priceDimensions"];
+                $firstodpd = reset($odPriceDimensions);
+                $od_price_per_unit = $firstodpd["pricePerUnit"]["USD"];
 
-                Log::info("Price per unit for instance $instance_type in $key is $price_per_unit");
+                // Extract 1YR Convertible RI Price
+                //$riprice = json_decode($result["PriceList"][0], true);
+                //$reserved = $riprice["terms"]["Reserved"];
+                //$rifirst = reset($reserved);
+                //$ripricedimensions = $rifirst["priceDimensions"];
+                //$firstripd = reset($ripricedimensions);
+                //$ri_price_per_unit = $firstripd["pricePerUnit"]["USD"];
+                //$riLeaseContractLength = $rifirst["termAttributes"]["LeaseContractLength"];
+                //$riPurchaseOption = $rifirst["termAttributes"]["PurchaseOption"];
+                //$riOfferingClass = $rifirst["termAttributes"]["OfferingClass"];
+
+
+                //$price_per_unit = (reset(reset(reset($terms))))["pricePerUnit"]["USD"];
+
+                Log::info("On Demand Price per unit for instance $instance_type in $key is $od_price_per_unit");
+                //Log::info("RI Price per unit for instance $instance_type in $key is $ri_price_per_unit");
 
                 // Update Database
                 
-                // Drop existing price record if it exists
-                if (Price::where('instanceType', $instance_type)->where('region', $key)->exists()) {
-                    $oldprice = Price::where('instanceType', $instance_type)->where('region', $key)->first();
-                    $oldprice->delete();
+                // Drop existing OD price record if it exists
+                if (Price::where('instanceType', $instance_type)->where('region', $key)
+                        ->where('termType','OnDemand')->exists()) {
+                    $oldodprice = Price::where('instanceType', $instance_type)->where('region', $key)
+                        ->where('termType','OnDemand')->first();
+                    $oldodprice->delete();
                 }
 
-                $price = new Price;
-                $price->service = 'ec2';
-                $price->description = $instance_type . " instance in " . $key;
-                $price->instanceType = $instance_type;
-                $price->region = $key;
-                $price->termType = "OnDemand";
-                $price->convertible = false;
-                $price->term = 0;
-                $price->currency = "USD";
-                $price->pricePerUnit = $price_per_unit;
+                // Drop existing RI price record if it exists
+                //if (Price::where('instanceType', $instance_type)->where('region', $key)
+                //        ->where('termType','RI')->exists()) {
+                //   $oldodprice = Price::where('instanceType', $instance_type)->where('region', $key)
+                //        ->where('termType','RI')->first();
+                // $oldodprice->delete();
+                //}
 
-                $price->save();
+                $odprice = new Price;
+                $odprice->service = 'ec2';
+                $odprice->description = "OnDemand " . $instance_type . " instance in " . $key;
+                $odprice->instanceType = $instance_type;
+                $odprice->region = $key;
+                $odprice->termType = "OnDemand";
+                $odprice->convertible = false;
+                $odprice->term = 0;
+                $odprice->currency = "USD";
+                $odprice->pricePerUnit = $od_price_per_unit;
+                $odprice->save();
+
+                //$riprice = new Price;
+                //$riprice->service = 'ec2';
+                //$riprice->description = "1YR Convertible Reserved Instance " . $instance_type . " instance in " . $key;
+                //$riprice->instanceType = $instance_type;
+                //$riprice->region = $key;
+                //$riprice->termType = "RI";
+                //$riprice->convertible = true;
+                //$riprice->term = 1;
+                //$riprice->currency = "USD";
+                //$riprice->pricePerUnit = $ri_price_per_unit;
+                //$riprice->save();
+
+
                 sleep(1);
 
             }
