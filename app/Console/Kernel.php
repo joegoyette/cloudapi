@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 use App\Jobs\UpdatePrices;
+use Queue;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,8 +27,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->job(new UpdatePrices)->hourly();
+        $schedule->call(function () {
+            Queue::push(new App\Jobs\UpdatePrices());
+        })->hourly();
     }
 
     /**
