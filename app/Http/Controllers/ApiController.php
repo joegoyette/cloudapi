@@ -111,7 +111,7 @@ class ApiController extends Controller
 
 
     /**
-    *     Return recommended instance type and pricing details    
+    *     Return recommended instance type and pricing detail    
     **/
     public function ebscost(Request $request, $region)
     {
