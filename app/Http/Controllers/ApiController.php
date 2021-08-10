@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Log;
+use AWS;
 use App\Models\Price;
 
 class ApiController extends Controller
@@ -114,9 +115,64 @@ class ApiController extends Controller
     **/
     public function ebscost(Request $request, $region)
     {
+        $awsregions = [
+            "us-east-2"         => "US East (Ohio)",
+            "us-east-1"         => "US East (N. Virginia)",
+            "us-west-1"         => "US West (N. California)",
+            "us-west-2"         => "US West (Oregon)",
+            "af-south-1"        => "Africa (Cape Town)",
+            "ap-east-1"         => "Asia Pacific (Hong Kong)",
+            "ap-south-1"        => "Asia Pacific (Mumbai)",
+            "ap-northeast-3"    => "Asia Pacific (Osaka)",
+            "ap-northeast-2"    => "Asia Pacific (Seoul)",
+            "ap-southeast-1"    => "Asia Pacific (Singapore)",
+            "ap-southeast-2"    => "Asia Pacific (Sydney)",
+            "ap-northeast-1"    => "Asia Pacific (Tokyo)",
+            "ca-central-1"      => "Canada (Central)",
+            //"eu-central-1"      => "Europe (Frankfurt)",
+            //"eu-west-1"         => "Europe (Ireland)",
+            //"eu-west-2"         => "Europe (London)",
+            //"eu-south-1"        => "Europe (Milan)",
+            //"eu-west-3"         => "Europe (Paris)",
+            //"eu-north-1"        => "Europe (Stockholm)",
+            "me-south-1"        => "Middle East (Bahrain)",
+            "sa-east-1"         => "South America (Sao Paulo)",
+            "us-gov-east-1"     => "AWS GovCloud (US-East)",
+            "us-gov-west-1"     => "AWS GovCloud (US-West)",
+        ];
+
+        $awsregion = $awsregions[$region];
+
+        $client = AWS::createClient('pricing');
+        $result = $client->getProducts([
+                    'Filters' => [
+                        [
+                            'Field' => 'volumeType',
+                            'Type' => 'TERM_MATCH',
+                            'Value' => 'General Purpose'
+                        ],[
+                            'Field' => 'location',
+                            'Type' => 'TERM_MATCH',
+                            'Value' => $awsregion
+                        ]
+                    ],
+                    'FormatVersion' => 'aws_v1',
+                    'MaxResults' => 100,
+                    'ServiceCode' => 'AmazonEC2'
+                    ]);
+
+        $ebsprice = json_decode($result["PriceList"][0], true);
+        $ebsterms = $ebsprice["terms"]["OnDemand"];
+        $firstebsterm = reset($ebsterms);
+        $ebspricedimensions = $firstebsterm["priceDimensions"];
+        $firstebsterm = reset($ebspricedimensions);
+        $ebs_price = $firstebsterm["pricePerUnit"]["USD"];
+
+        Log::Info("EBS GP2 Pricing for $region is $ebs_price $/GB-month");
+
         $results = [
             "region" => $region,
-            "ebs_cost" => 0.12,
+            "ebs_cost" => $ebs_price,
         ];
 
         return json_encode($results);
