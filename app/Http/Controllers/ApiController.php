@@ -185,7 +185,7 @@ class ApiController extends Controller
     {
         $results = [
             "region" => $region,
-            "egress_cost" => 0.042,
+            "egress_cost" => 0.092,  // Sydney to Internet
         ];
 
         return json_encode($results);
