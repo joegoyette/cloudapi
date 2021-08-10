@@ -5,7 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-use app\Jobs\UpdatePrices;
+use App\Jobs\UpdatePrices;
 
 class Kernel extends ConsoleKernel
 {
