@@ -139,6 +139,7 @@ class UpdatePrices implements ShouldQueue
                 $price->pricePerUnit = $price_per_unit;
 
                 $price->save();
+                sleep(1);
 
             }
         }
