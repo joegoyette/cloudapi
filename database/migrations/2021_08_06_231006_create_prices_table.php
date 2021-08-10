@@ -24,7 +24,7 @@ class CreatePricesTable extends Migration
             $table->binary('convertible')->nullable();   // true
             $table->integer('term')->nullable();         // 1 year
             $table->string('currency')->nullable();
-            $table->float('pricePerUnit')->nullable();
+            $table->double('pricePerUnit',12,4)->nullable();
         });
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Log;
+use App\Models\Price;
 
 class ApiController extends Controller
 {
@@ -84,13 +85,22 @@ class ApiController extends Controller
             }
          }
 
+
+         // Get the current pricing from the local database
+        $price = Price::where('region', $region)->where('instanceType', $recommended_instance_type)->first();
+
+
         $results = [
             "region" => $region,
             "cpu" => $cpu,
             "memory" => $memory,
-            "recommended_instance_type" => $recommended_instance_type,
-            "on_demand_cost" => 0.096,
-            "one_year_standard_ri_allupfront_cost" => 0.056,
+            "service" => $price->service,
+            "recommended_instance_type" => $price->instanceType,
+            "service_description" => $price->description,
+            "term_type" => $price->termType,
+            "on_demand_cost" => $price->pricePerUnit,
+            "currency" => "USD",
+            "updated_at" => $price->updated_at,
         ];
 
         Log::info("API Request Receive");
