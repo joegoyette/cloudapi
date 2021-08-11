@@ -5,7 +5,6 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-use App\Jobs\UpdatePrices;
 use Queue;
 
 class Kernel extends ConsoleKernel
@@ -28,7 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            Queue::push(new App\Jobs\UpdatePrices());
+            Queue::push(new \App\Jobs\UpdatePrices());
         })->hourly();
     }
 
